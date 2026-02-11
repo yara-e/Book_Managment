@@ -33,7 +33,7 @@ A RESTful API for managing **Books** and **Categories** built with **Node.js, Ex
 ### 1️⃣ Clone Repository
 
 ```
-git clone <[your-repo-url](https://github.com/yara-e/Book_Managment)>
+git clone https://github.com/yara-e/Book_Managment
 cd Book_Management
 ```
 

@@ -13,20 +13,157 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  email    String   @unique
+  name     String
+  password String
+  role     UserRole @default(USER)
+  phone    String
+  // Address
+  address  String
+  city     String
+  country  String
+
+  resetPasswordToken   String?   @unique
+  resetPasswordExpires DateTime?
+
+  createdAt DateTime @default(now())
+
+  orders  Order[]
+  reviews Review[]
+}
+
 model Category {
-  id          Int     @id @default(autoincrement())
-  name        String 
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  name        String   @unique
   description String
+  bookCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   books       Book[]
 }
 
 model Book {
-  id          Int      @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
   name        String
-  description String
-  price       Float
   author      String
+  price       Float
   stock       Int
-  categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
+  description String?
+  image       String?
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  reviews     Review[]
+  reviewStats BookReviewStats?
+  orderItems  OrderItem[]
+
+  @@index([categoryId])
+  @@index([categoryId, name])
+}
+
+model Order {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  status OrderStatus @default(PENDING)
+  total  Float
+
+  createdAt DateTime @default(now())
+
+  items   OrderItem[]
+  payment Payment?
+
+  @@index([userId])
+  @@index([createdAt, id])
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+
+  orderId Int
+  bookId  Int
+
+  order Order @relation(fields: [orderId], references: [id])
+  book  Book  @relation(fields: [bookId], references: [id])
+
+  quantity Int
+  price    Float
+
+  @@index([orderId])
+  @@index([bookId])
+}
+
+model Payment {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+
+  amount   Float
+  status   PaymentStatus @default(PENDING)
+  provider String
+
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  bookId Int
+
+  rating  Int
+  comment String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@unique([userId, bookId]) // one review per user per book
+  @@index([bookId])
+  @@index([bookId, createdAt])
+}
+
+model BookReviewStats {
+  bookId Int  @id
+  book   Book @relation(fields: [bookId], references: [id])
+
+  reviewCount Int   @default(0)
+  ratingSum   Int   @default(0) // total of all ratings
+  averageRate Float @default(0)
 }

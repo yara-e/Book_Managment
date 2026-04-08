@@ -29,8 +29,4 @@ export const deleteCategoryRepo=(id:number)=>{
     })
 }
 
-export const countBooks=(categoryId: number)=> {
-  return prisma.book.count({
-    where: { categoryId }
-  })
-}
+ 

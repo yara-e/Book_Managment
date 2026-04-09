@@ -1,133 +1,40 @@
-# 📚 Book Management API
+# 📚 The Digital Shelf - Bookstore
 
-A RESTful API for managing **Books** and **Categories** built with **Node.js, Express, TypeScript, Prisma, PostgreSQL, and Zod validation**.
-
----
-
-## 🚀 Features
-
-* CRUD operations for Books and Categories
-* Relational database design (Book belongs to Category)
-* Request validation using Zod
-* Global error handling
-* Swagger API Documentation
-* Unit testing with Jest
+A Scalable E-commerce backend built with **Node.js**, **TypeScript**, and **Prisma**. This project demonstrates backend patterns including bidirectional cursor pagination, Redis-powered caching, secure Stripe payments, and database transactions.
 
 ---
 
-## 🛠 Tech Stack
+## 🚀 Key Features
 
-* Node.js
-* Express.js
-* TypeScript
-* Prisma ORM
-* PostgreSQL
-* Zod
-* Swagger (OpenAPI)
-* Jest
+### 🛒 E-Commerce & Payments
+* **Stripe Integration:** Secure checkout flow using Stripe Hosted Sessions.
+* **Inventory Management:** Automatic stock validation before checkout and atomic stock decrement after successful payment using **Prisma Transactions**.
+* **Order Tracking:** Robust state management for `PENDING`, `PAID`, and `CANCELLED` statuses.
 
----
+### ⚡ Performance & Scalability
+* **Upstash Redis Caching:**
+    * **Cache-Aside Pattern:** Optimized for high-traffic "Best Seller" book details.
+    * **Dynamic List Caching:** Unique cache keys generated based on category, search, and pagination parameters.
+    * **Invalidation:** Automatic cache purging during Create, Update, and Delete operations to prevent stale data.
+* **Cursor Pagination:** Efficient database queries for Books and Admin Orders, allowing seamless "Next" and "Previous" navigation.
+* **Rate Limiting:** IP-based protection using Upstash Redis sliding window algorithm to prevent API abuse and brute-force attacks.
 
-## ⚙️ Setup & Installation
-
-### 1️⃣ Clone Repository
-
-```
-git clone https://github.com/yara-e/Book_Managment
-cd Book_Management
-```
-
-### 2️⃣ Install Dependencies
-
-```
-npm install
-```
-
-### 3️⃣ Create `.env`
-
-```
-DATABASE_URL=your_postgres_connection_string
-PORT=8000
-```
-
-### 4️⃣ Run Migrations
-
-```
-npx prisma migrate dev
-```
-
-### 5️⃣ Generate Prisma Client
-
-```
-npx prisma generate
-```
-
-### 6️⃣ Run Server
-
-```
-npm run dev
-```
-
-Server runs at:
-
-```
-http://localhost:8000
-```
+### 🛡️ Security & Architecture
+* **RBAC (Role-Based Access Control):** Secure route protection for `USER` and `ADMIN` roles.
+* **Global Error Handling:** Centralized middleware for consistent, professional API error responses.
+* **Clean Architecture:** Strict separation of concerns between Controllers, Services, and Repositories.
 
 ---
 
-## 📖 API Documentation
+## 🛠️ Tech Stack
 
-Swagger UI:
+* **Runtime:** Node.js
+* **Language:** TypeScript
+* **Framework:** Express.js
+* **Database:** PostgreSQL (Supabase)
+* **ORM:** Prisma
+* **Cache/Rate Limit:** Upstash Redis
+* **Payments:** Stripe API
+* **File Storage:** Cloudflare R2
+* **Environment:** Cross-platform (Windows/Linux/Mac)
 
-```
-http://localhost:8000/api-docs
-```
-
-Swagger JSON:
-
-```
-http://localhost:8000/api-docs.json
-```
-
----
-
-## 📚 Main Endpoints
-
-### Categories
-
-* `GET /category`
-* `GET /category/:id`
-* `POST /category`
-* `PUT /category/:id`
-* `DELETE /category/:id`
-
----
-
-### Books
-
-* `GET /book`
-* `GET /book/:id` (includes category)
-* `POST /book`
-* `PUT /book/:id`
-* `DELETE /book/:id`
-
----
-
-## 🧪 Run Tests
-
-```
-npm test
-```
-
-Tests cover service layer business logic for Books and Categories.
-
----
-
-## 🔐 Business Rules
-
-* Book must belong to existing category
-* Category cannot be deleted if it contains books
-* All inputs are validated before database operations
-
----
